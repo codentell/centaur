@@ -1,0 +1,23 @@
+{
+  "name": "rive-canvas-advanced-api-centaur-example",
+  "version": "1.0.0",
+  "description": "Originated from https://codesandbox.io/s/centaur-u734l?file=/src/index.js",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "@rive-app/canvas-advanced": "1.0.70",
+    "@rive-app/canvas-advanced-single": "1.0.70",
+    "parcel-bundler": "^1.12.5"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "typescript": "^4.8.3"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
+}
