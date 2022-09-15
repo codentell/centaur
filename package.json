@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@rive-app/canvas-advanced-single": "^1.0.80",
+    "parcel": "^2.7.0",
     "parcel-plugin-asset-copier": "^1.1.0",
     "src": "^1.1.2"
   }
