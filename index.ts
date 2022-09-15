@@ -2,72 +2,8 @@ import RiveCanvas, {
   Artboard,
   SMIInput,
   StateMachineInstance,
-  RiveCanvas as RiveCanvasType
-} from "@rive-app/canvas-advanced";
-// import RiveCanvas from "./rive.mjs?hi=meeeeee";
-
-const appleRadius = 40;
-const appleRadiusSquared = appleRadius * appleRadius;
-
-class RuntimeLoader {
-  // Singleton helpers
-  private static runtime;
-  // Flag to indicate that loading has started/completed
-  private static isLoading = false;
-  // List of callbacks for the runtime that come in while loading
-  private static callBackQueue = [];
-  // Instance of the Rive runtime
-  private static rive;
-  // Path to the Wasm file; default path works for testing only;
-  // if embedded wasm is used then this is never used.
-  private static wasmURL: string = `https://unpkg.com/@rive-app/canvas-advanced@1.0.70/rive.wasm`;
-
-  // Class is never instantiated
-  private constructor() {}
-
-  // Loads the runtime
-  private static loadRuntime() {
-    RiveCanvas({
-      // Loads Wasm bundle
-      locateFile: (_) => RuntimeLoader.wasmURL
-    }).then((rive) => {
-      RuntimeLoader.runtime = rive;
-      // Fire all the callbacks
-      while (RuntimeLoader.callBackQueue.length > 0) {
-        const cbThing = RuntimeLoader.callBackQueue.shift();
-        if (cbThing) {
-          cbThing(RuntimeLoader.runtime);
-        }
-      }
-    });
-  }
-
-  // Provides a runtime instance via a callback
-  public static getInstance(callback) {
-    // If it's not loading, start loading runtime
-    if (!RuntimeLoader.isLoading) {
-      RuntimeLoader.isLoading = true;
-      RuntimeLoader.loadRuntime();
-    }
-    if (!RuntimeLoader.runtime) {
-      RuntimeLoader.callBackQueue.push(callback);
-    } else {
-      callback(RuntimeLoader.runtime);
-    }
-  }
-
-  // Provides a runtime instance via a promise
-  public static awaitInstance() {
-    return new Promise((resolve, reject) =>
-      RuntimeLoader.getInstance((rive) => resolve(rive))
-    );
-  }
-
-  // Manually sets the wasm url
-  public static setWasmUrl(url) {
-    RuntimeLoader.wasmURL = url;
-  }
-}
+} from "@rive-app/canvas-advanced-single";
+import Centaur from "./centaur.riv";
 
 interface AppleInstanceData {
   x: number;
@@ -87,14 +23,16 @@ interface ArrowInstanceData {
   time: number;
 }
 
-// Wrap the whole thing in an async function so we can use awaits.
+const appleRadius = 40;
+const appleRadiusSquared = appleRadius * appleRadius;
+
 async function main() {
-  let rive = (await RuntimeLoader.awaitInstance()) as RiveCanvasType;
+  let rive = await RiveCanvas();
   // Instance the Rive runtime (this does WASM stuff).
   // Get some rive file bytes (we uploaded piggy.riv into this
   // sandbox, you can see it in the file list on the left.)
   let fileBytes = new Uint8Array(
-    await (await fetch(new Request("centaur.riv"))).arrayBuffer()
+    await (await fetch(new Request(Centaur))).arrayBuffer()
   );
   // Turn bytes into a runtime representation of the file.
   const file = await rive.load(fileBytes);
@@ -147,7 +85,7 @@ async function main() {
         y: -appleBounds.maxY + Math.random() * -appleBounds.maxY,
         artboard: aplInstance,
         machine: appleMachine,
-        explodeTrigger: explodeTrigger
+        explodeTrigger: explodeTrigger,
       };
       appleMachine.advance(0);
       appleInstance.artboard.advance(0);
@@ -254,7 +192,7 @@ async function main() {
         minX: 0,
         minY: 0,
         maxX: canvas.width,
-        maxY: canvas.height
+        maxY: canvas.height,
       },
       bounds
     );
@@ -385,10 +323,10 @@ async function main() {
 
       translation: {
         x: transform.tx + characterX,
-        y: transform.ty
+        y: transform.ty,
       },
       heading: { x: transform.xx, y: transform.xy },
-      time: 0
+      time: 0,
     };
     arrowInstance.artboard.frameOrigin = false;
     arrowInstance.artboard.advance(0);
