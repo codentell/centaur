@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html -d docs",
-    "build": "rm -fR docs && parcel build index.html -d docs --public-url ."
+    "build": "rm -fR docs && parcel build index.html -d docs --public-url .",
+    "prod:build": "parcel build index.html -d docs --public-url ."
   },
   "keywords": [],
   "author": "",
